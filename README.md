@@ -20,12 +20,7 @@ Sistem 4 ana container'dan oluşmaktadır:
 - **Real-time Updates**: Gerçek zamanlı veri güncellemeleri
 
 
-##  Gereksinimler
 
-- Docker
-- Docker Compose
-- En az 4GB RAM
-- En az 10GB disk alanı
 
 ##  Kurulum
 
