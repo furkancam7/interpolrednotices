@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interpol Red Notices - Most Wanted</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #e74c3c;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .alarm-card {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .notices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .notice-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notice-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .notice-card.updated {
+            border-left: 5px solid #e74c3c;
+        }
+
+        .notice-card.updated::before {
+            content: "UPDATED";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .notice-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: #999;
+            font-size: 3rem;
+        }
+
+        .notice-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .notice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .notice-detail {
+            text-align: center;
+            flex: 1;
+        }
+
+        .notice-detail-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .notice-detail-value {
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .notice-timestamp {
+            font-size: 0.8rem;
+            color: #999;
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            padding: 50px;
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .notices-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-exclamation-triangle"></i> INTERPOL RED NOTICES</h1>
+            <p class="subtitle">Most Wanted Criminals Database</p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3></h3>
+                <p><i class="fas fa-users"></i> Total Records</p>
+            </div>
+            <div class="stat-card alarm-card">
+                <h3>{{ updated_count }}</h3>
+                <p><i class="fas fa-bell"></i> Updated Records</p>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-clock"></i></h3>
+                <p>Last Update: {{ current_time }}</p>
+            </div>
+        </div>
+
+        {% if red_notices %}
+            <div class="notices-grid">
+                {% for notice in red_notices %}
+                    <div class="notice-card {% if notice.updated_at > notice.created_at %}updated{% endif %}">
+                        <div class="notice-image">
+                            {% if notice.image_url %}
+                                <img src="{{ notice.image_url }}" alt="{{ notice.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                            {% else %}
+                                <i class="fas fa-user-secret"></i>
+                            {% endif %}
+                        </div>
+                        <div class="notice-name">{{ notice.name }}</div>
+                        <div class="notice-details">
+                            <div class="notice-detail">
+                                <div class="notice-detail-label">Age</div>
+                                <div class="notice-detail-value">{{ notice.age or 'Unknown' }}</div>
+                            </div>
+                            <div class="notice-detail">
+                                <div class="notice-detail-label">Nationality</div>
+                                <div class="notice-detail-value">{{ notice.nationality or 'Unknown' }}</div>
+                            </div>
+                        </div>
+                        <div class="notice-timestamp">
+                            <i class="fas fa-calendar"></i> Scraped: {{ notice.scraped_at.strftime('%Y-%m-%d %H:%M') if notice.scraped_at else 'Unknown' }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i> Loading red notices...
+            </div>
+        {% endif %}
+
+        <div class="footer">
+            <p><i class="fas fa-shield-alt"></i> Interpol Red Notices Database</p>
+            <p>Real-time updates from Interpol's most wanted list</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh every 30 seconds
+        setTimeout(function() {
+            location.reload();
+        }, 30000);
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.notice-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
