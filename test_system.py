@@ -74,7 +74,7 @@ def test_postgres():
     print(" PostgreSQL test ediliyor...")
     
     try:
-        # Basit bir bağlantı testi
+        
         import psycopg2
         conn = psycopg2.connect(
             host="localhost",
