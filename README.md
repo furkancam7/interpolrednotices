@@ -41,9 +41,7 @@ cp env.example .env
 copy env.example .env
 ```
 
-**Not:** `.env` dosyası zaten oluşturulmuş ve yapılandırılmıştır. Tüm environment değişkenleri Docker container'ları için uygun şekilde ayarlanmıştır.
 
-Gerekirse `.env` dosyasındaki değerleri düzenleyin.
 
 ### 3. Docker Compose ile Başlatın
 
