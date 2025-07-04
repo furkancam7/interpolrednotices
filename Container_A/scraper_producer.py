@@ -12,10 +12,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-# Load environment variables
 load_dotenv()
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
@@ -56,16 +54,16 @@ class InterpolScraper:
                 return []
                 
             self.driver.get(self.base_url)
-            time.sleep(5)  # Wait for page to load
+            time.sleep(5) 
             
             red_notices = []
             page = 1
-            max_pages = 50  # Limit to prevent infinite loop
+            max_pages = 50  
             
             while page <= max_pages:
                 logger.info(f"Scraping page {page}")
                 
-                # Wait for red notices to load
+               
                 try:
                     WebDriverWait(self.driver, 20).until(
                         EC.presence_of_element_located((By.CLASS_NAME, "redNoticeItem"))
@@ -74,7 +72,6 @@ class InterpolScraper:
                     logger.warning(f"No red notices found on page {page}")
                     break
                 
-                # Find all red notice items on current page
                 notice_items = self.driver.find_elements(By.CLASS_NAME, "redNoticeItem")
                 logger.info(f"Found {len(notice_items)} red notice items on page {page}")
                 
@@ -126,7 +123,7 @@ class InterpolScraper:
                         logger.error(f"Error processing notice item: {e}")
                         continue
                 
-                # Try to go to next page (daha sağlam ve esnek)
+                
                 next_button = None
                 next_selectors = [
                     ".nextElement",
@@ -148,7 +145,7 @@ class InterpolScraper:
                     try:
                         next_button.click()
                         logger.info(f"Clicked next button with selector: {selector}")
-                        time.sleep(3)  # Wait for page to load
+                        time.sleep(3)  
                         page += 1
                     except Exception as e:
                         logger.warning(f"Next button found but could not be clicked: {e}")
@@ -193,7 +190,7 @@ class RabbitMQProducer:
             self.connection = pika.BlockingConnection(parameters)
             self.channel = self.connection.channel()
             
-            # Declare queue
+            
             self.channel.queue_declare(
                 queue=self.queue_name,
                 durable=True
@@ -214,7 +211,7 @@ class RabbitMQProducer:
                 routing_key=self.queue_name,
                 body=message_body,
                 properties=pika.BasicProperties(
-                    delivery_mode=2,  # make message persistent
+                    delivery_mode=2,  
                     content_type='application/json'
                 )
             )
@@ -237,7 +234,7 @@ class InterpolDataCollector:
     def __init__(self):
         self.scraper = InterpolScraper()
         self.producer = RabbitMQProducer()
-        self.interval = int(os.getenv('SCRAPING_INTERVAL', '300'))  # 5 minutes default
+        self.interval = int(os.getenv('SCRAPING_INTERVAL', '300'))  
         
     def run(self):
         """Main run loop"""
@@ -245,25 +242,25 @@ class InterpolDataCollector:
         
         while True:
             try:
-                # Scrape data
+                
                 red_notices = self.scraper.scrape_red_notices()
                 
                 if red_notices:
-                    # Connect to RabbitMQ
+                    
                     self.producer.connect()
                     
-                    # Send each notice to queue
+                    
                     for notice in red_notices:
                         self.producer.send_message(notice)
                     
-                    # Close connection
+                    
                     self.producer.close()
                     
                     logger.info(f"Successfully processed {len(red_notices)} red notices")
                 else:
                     logger.warning("No red notices found")
                 
-                # Wait for next interval
+                
                 logger.info(f"Waiting {self.interval} seconds before next scrape")
                 time.sleep(self.interval)
                 
@@ -272,7 +269,7 @@ class InterpolDataCollector:
                 break
             except Exception as e:
                 logger.error(f"Error in main loop: {e}")
-                time.sleep(60)  # Wait 1 minute before retrying
+                time.sleep(60)  
 
 
 if __name__ == "__main__":
