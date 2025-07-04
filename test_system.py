@@ -13,7 +13,7 @@ from datetime import datetime
 
 def test_web_app():
     """Web uygulamasını test eder"""
-    print("🔍 Web uygulaması test ediliyor...")
+    print(" Web uygulaması test ediliyor...")
     
     try:
         # Health check
@@ -58,7 +58,7 @@ def test_rabbitmq():
                               auth=('admin', 'admin123'), timeout=10)
         if response.status_code == 200:
             data = response.json()
-            print(f"✅RabbitMQ erişilebilir: {data.get('rabbitmq_version', 'Unknown')}")
+            print(f"RabbitMQ erişilebilir: {data.get('rabbitmq_version', 'Unknown')}")
             return True
         else:
             print(f" RabbitMQ erişilemez: {response.status_code}")
@@ -71,7 +71,7 @@ def test_rabbitmq():
 
 def test_postgres():
     """PostgreSQL'i test eder"""
-    print("🔍 PostgreSQL test ediliyor...")
+    print(" PostgreSQL test ediliyor...")
     
     try:
         # Basit bir bağlantı testi
@@ -112,7 +112,7 @@ def test_docker_containers():
         )
         
         if result.returncode == 0:
-            containers = result.stdout.strip().split('\n')[1:]  # Header'ı atla
+            containers = result.stdout.strip().split('\n')[1:]  
             expected_containers = [
                 'interpol_postgres',
                 'interpol_rabbitmq', 
